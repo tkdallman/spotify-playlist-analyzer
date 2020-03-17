@@ -3,19 +3,26 @@
     .song__title
       h2 {{ track.name }}
       h3 {{artists }}
-    .song__track-info(v-if='trackData')
-      p(v-for="field in displayedFields")
-        strong {{ field + ': ' }}
 
-        span(v-if="field === 'key'") {{ translatedKey }}
-        span(v-else-if="field === 'valence'") {{ translatedValence }}
-        span(v-else-if="field === 'tempo'") {{ Math.round(trackData[field]) + ' bpm'}}
-        span(v-else) {{ trackData[field] }}
+    .song__track-info
+      template(v-if="isLoading && !trackData")
+        Loader
+      template(v-if="trackData")
+        p(v-for="field in displayedFields")
+          strong {{ field + ': ' }}
+          span(v-if="field === 'key'") {{ translatedKey }}
+          span(v-else-if="field === 'valence'") {{ translatedValence }}
+          span(v-else-if="field === 'tempo'") {{ Math.round(trackData[field]) + ' bpm'}}
+          span(v-else) {{ trackData[field] }}
 </template>
 <script>
 import { mapState } from 'Vuex'
+import Loader from '~/components/Loader'
 
 export default {
+  components: {
+    Loader
+  },
   props: {
     song: {
       type: Object,
@@ -27,7 +34,8 @@ export default {
   },
   computed: {
     ...mapState({
-      playlistTrackData: state => state.playlistTrackData
+      playlistTrackData: state => state.playlistTrackData,
+      isLoading: state => state.isLoading
     }),
     track () {
       return this.song.track

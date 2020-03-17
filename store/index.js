@@ -13,6 +13,9 @@ export const mutations = {
     state.accessToken = accessToken
     state.isLoggedIn = true
   },
+  SET_IS_LOADING (state, loadingState) {
+    state.isLoading = loadingState
+  },
   SET_PLAYLISTS (state, playlists) {
     state.playlists = playlists
   },
@@ -64,11 +67,12 @@ export const actions = {
       params: {
         access_token: this.state.accessToken
       }
-    })
+    }).catch(err => console.log(err))
     commit('ADD_MORE_TRACKS', moreTracks)
     dispatch('getTrackData', moreTracks.items)
   },
   async getTrackData ({ commit }, items) {
+    commit('SET_IS_LOADING', true)
     const trackDataRequests = items.map((item) => {
       return this.$axios.$get(`https://api.spotify.com/v1/audio-features/${item.track.id}`, {
         params: {
@@ -82,6 +86,7 @@ export const actions = {
       return obj
     }, {})
     commit('ADD_TRACK_DATA', formattedData)
+    commit('SET_IS_LOADING', false)
   },
   sortPlaylist ({ commit }, sortType) {
     commit('SORT_PLAYLIST', sortType.toLowerCase())

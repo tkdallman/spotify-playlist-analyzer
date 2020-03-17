@@ -28,6 +28,7 @@
                 option Danceability
             ul.page__tracks(v-for="(song, index) in activePlaylist.items")
               Song(:song="song" :darkTheme="index % 2 !== 0")
+      button(v-show="playlistActive" @click="clearActivePlaylist") Back
       button(v-if="showMoreButton" @click="getMoreTracks(activePlaylist.next)") More
 
       .page__card
@@ -36,8 +37,8 @@
           ul
             li 🎵 This is mostly for fun, this data doesn't actually appear to be super accurate
             li 🎵 BPM values have been rounded
-            li 🎵 Other others are proprietary algorithms that are made by Spotify
-            li 🎵 Valence is an approximation of a song's mood - 0 being sad, 1 being happy
+            li 🎵 Other ratings are proprietary algorithms that are made by Spotify
+            li 🎵 i.e. valence, which is an approximation of a song's mood - 0 being sad, 1 being happy
 </template>
 
 <script>
@@ -95,7 +96,7 @@ export default {
 <style lang="scss">
 
 * {
-  font-family: Helvetica;
+  font-family: "Helvetica Neue", "Helvetica", sans-serif
 }
 
 html {
@@ -117,7 +118,11 @@ a {
 }
 
 h4 {
-  margin-right: 16px;
+  margin: 0 16px 8px;
+}
+
+select {
+  font-size: 16px;
 }
 
 button {
@@ -180,6 +185,7 @@ button {
       width: 100%;
       height: 100%;
       display: block;
+      letter-spacing: 0.6px;
     }
 
     &:nth-child(odd) {
@@ -194,11 +200,11 @@ button {
 }
 
 .slide-fade-enter-active, .slide-fade-leave-active {
-  transition: all .6s ease-in;
+  transition: all .4s ease-in;
 }
 
 .slide-fade-enter, .slide-fade-leave-to {
-  transform: translateX(50px);
+  // transform: translateX(200px);
   opacity: 0;
 }
 
