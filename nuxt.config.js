@@ -15,6 +15,9 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
+  router: {
+    base: '/spotify-playlist-analyzer/'
+  },
   /*
   ** Customize the progress-bar color
   */
