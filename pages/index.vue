@@ -14,7 +14,7 @@
             li.page__playlist(v-for="playlist in playlists")
               a(role="button" @click="getPlaylist(playlist.id)") {{ playlist.name }}
 
-      transition(name="slide-fade")
+      transition
         .page__card(v-if="playlistActive")
           .page__selected-playlist
             //- h1 Playlist
@@ -35,10 +35,10 @@
         .page__disclaimer
           h4 Notes :
           ul
-            li 🎵 This is mostly for fun, this data doesn't actually appear to be super accurate
-            li 🎵 BPM values have been rounded
-            li 🎵 Other ratings are proprietary algorithms that are made by Spotify
-            li 🎵 i.e. valence, which is an approximation of a song's mood - 0 being sad, 1 being happy
+            li.page__list-item This is mostly for fun, this data doesn't actually appear to be super accurate
+            li.page__list-item  BPM values have been rounded
+            li.page__list-item  Other ratings are proprietary algorithms that are made by Spotify
+            li.page__list-item  i.e. valence, which is an approximation of a song's mood - 0 being sad, 1 being happy
 </template>
 
 <script>
@@ -105,6 +105,7 @@ html {
 }
 
 ul {
+  position: relative;
   list-style-type: none;
   padding-left: 0;
 }
@@ -185,7 +186,12 @@ button {
       width: 100%;
       height: 100%;
       display: block;
-      letter-spacing: 0.6px;
+      letter-spacing: 1px;
+      transition: all .1s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+
+      &:hover {
+        transform: scale(1.1);
+      }
     }
 
     &:nth-child(odd) {
@@ -197,16 +203,31 @@ button {
     margin: 16px;
     text-align: left;
   }
+
+  &__list-item {
+    padding-left: 20px;
+    margin-bottom: 3px;
+
+    &:before {
+      content: '🎵';
+      position: absolute;
+      left: 0;
+    }
+  }
 }
 
 .slide-fade-enter-active, .slide-fade-leave-active {
-  transition: all .4s ease-in;
+  transition: all .4s cubic-bezier(1.0, 0.5, 0.8, 1.0);;
 }
 
 .slide-fade-enter, .slide-fade-leave-to {
-  // transform: translateX(200px);
+  transform: translateX(10px);
   opacity: 0;
 }
+
+// .slide-fade-leave-to {
+//   // transform: translateX(200px);
+//   opacity: 0;
 
 .slide-top-enter-active {
   transition: all .2s cubic-bezier(1.0, 0.5, 0.8, 1.0);
