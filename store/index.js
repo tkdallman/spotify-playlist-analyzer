@@ -53,7 +53,7 @@ export const actions = {
     })
     commit('SET_PLAYLISTS', playlists.items)
   },
-  async getPlaylist ({ commit, dispatch }, playlistId) {
+  async getPlaylist ({ commit, dispatch }, [playlistId, playlistName]) {
     const playlist = await this.$axios.$get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50`, {
       params: {
         access_token: this.state.accessToken

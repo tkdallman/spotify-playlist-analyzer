@@ -12,12 +12,33 @@
         .page__card(v-if="!playlistActive")
           ul.page__playlists
             li.page__playlist(v-for="playlist in playlists")
-              a(role="button" @click="getPlaylist(playlist.id)") {{ playlist.name }}
+              a(role="button" @click="getPlaylist([playlist.id, playlist.name])") {{ playlist.name }}
 
-      transition
+      .page__card(v-if="playlistActive && hasTrackData")
+        h2 About this playlist:
+        h5 (based on the first 50 tracks...)
+        ul.page__analysis
+          li
+            strong Average Happiness:
+            p {{ happiness }}
+            .page__emoji {{ happinessEmoji }}
+          li
+            strong Average Danciness:
+            p {{ danciness }}
+            .page__emoji(:class="{ 'page__emoji--crossed': danciness < 0.5 }")
+              | 💃
+          li
+            strong Average Tempo:
+            p {{ avgTempo }} bpm
+          li
+            strong Average Track Length:
+            p {{ avgLength }}
+          li
+            strong Song Popularity:
+            p {{ popularity }}
+      transition(name="slide-fade")
         .page__card(v-if="playlistActive")
           .page__selected-playlist
-            //- h1 Playlist
             .page__sort
               h4 Sort:
               select#SortBy(@change="changeSort")
@@ -33,14 +54,14 @@
 
       .page__card
         .page__disclaimer
-          h4 Notes :
+          h4.page__small-header Notes :
           ul
-            li.page__list-item This is mostly for fun, this data doesn't actually appear to be super accurate
-            li.page__list-item  BPM values have been rounded
-            li.page__list-item  Other ratings are proprietary algorithms that are made by Spotify
-            li.page__list-item  i.e. valence, which is an approximation of a song's mood - 0 being sad, 1 being happy
+            li.page__list-item This is mostly for fun, this data doesn't actually appear to be super accurate i.e. bpm values often have 3 decimal places
+            li.page__list-item  {{ 'Ratings like happiness are based on valence, which is a Spotify algorithm. More information can be found ' }}
+              a(href='https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/') here
+            li.page__list-item  This was built by tkdallman@gmail.com using VueJS and Nuxt
 </template>
-
+`
 <script>
 import { mapState, mapActions } from 'Vuex'
 import Logo from '~/components/Logo.vue'
@@ -52,6 +73,11 @@ export default {
     Logo,
     ContentBlock,
     Song
+  },
+  data () {
+    return {
+      avgHappiness: null
+    }
   },
   computed: {
     ...mapState({
@@ -66,6 +92,52 @@ export default {
     },
     showMoreButton () {
       return this.activePlaylist && this.activePlaylist.next
+    },
+    totalTracks () {
+      return Object.keys(this.playlistTrackData).length
+    },
+    hasTrackData () {
+      return this.playlistTrackData
+    },
+    happiness () {
+      const happiness = Object.keys(this.playlistTrackData).reduce((sum, item) => {
+        return (sum += this.playlistTrackData[item].valence)
+      }, 0) / this.totalTracks
+      return happiness.toFixed(3) || null
+    },
+    happinessEmoji () {
+      const emoji = this.happiness < 0.333
+        ? '😔' : this.happiness < 0.666 ? '😐' : '😊'
+      return emoji
+    },
+    danciness () {
+      const danciness = Object.keys(this.playlistTrackData).reduce((sum, item) => {
+        return (sum += this.playlistTrackData[item].danceability)
+      }, 0) / this.totalTracks
+      return danciness.toFixed(3)
+    },
+    avgTempo () {
+      const tempo = Object.keys(this.playlistTrackData).reduce((sum, item) => {
+        return (sum += this.playlistTrackData[item].tempo)
+      }, 0) / this.totalTracks
+      return Math.round(tempo)
+    },
+    avgLength () {
+      const length = Object.keys(this.playlistTrackData).reduce((sum, item) => {
+        return (sum += this.playlistTrackData[item].duration_ms)
+      }, 0) / this.totalTracks
+
+      const minutes = Math.floor(length / 60000)
+      const seconds = ((length % 60000) / 1000).toFixed(0)
+      return minutes + ':' + (seconds < 10 ? '0' : '') + seconds
+    },
+    popularity () {
+      const popularity = this.activePlaylist.items.reduce((sum, item) => {
+        return (sum += item.track.popularity)
+      }, 0) / this.totalTracks
+      return popularity < 20
+        ? 'super underground, man'
+        : popularity < 50 ? 'indie' : 'mainstream'
     }
   },
   mounted () {
@@ -84,6 +156,9 @@ export default {
       'clearActivePlaylist'
     ]),
     authorizeUser () {
+      // dev mode
+      // window.location.href = 'https://accounts.spotify.com/authorize?client_id=c1d9eac11b924974befb50e216500a9a&redirect_uri=http:%2F%2Flocalhost:3000&scope=user-read-private%20user-read-email%20playlist-read-private%20playlist-read-collaborative&response_type=token'
+      // production
       window.location.href = 'https://accounts.spotify.com/authorize?client_id=c1d9eac11b924974befb50e216500a9a&redirect_uri=https:%2F%2Ftkdallman.github.io%2Fspotify-playlist-analyzer%2F&scope=user-read-private%20user-read-email%20playlist-read-private%20playlist-read-collaborative&response_type=token'
     },
     changeSort (e) {
@@ -118,8 +193,18 @@ a {
   cursor: pointer;
 }
 
+h2 {
+  margin: 16px 0 4px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
 h4 {
-  margin: 0 16px 8px;
+  margin: 0 16px;
+}
+
+h5 {
+  margin-bottom: 8px;
 }
 
 select {
@@ -127,6 +212,7 @@ select {
 }
 
 button {
+  cursor: pointer;
   padding: 16px 20px;
   border-color: #191414;
   background-color: #1DB954;
@@ -134,6 +220,11 @@ button {
   font-size: 20px;
   font-weight: 500;
   color: #f0e7e7;
+
+  &:active, &:focus {
+    outline: none;
+    border: none;
+  }
 }
 
 .page {
@@ -170,6 +261,46 @@ button {
     border: 2px solid grey;
   }
 
+  &__analysis {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    li, strong {
+      font-family: monospace;
+      font-size: 1.2rem;
+    }
+
+    li {
+      display: flex;
+      flex-direction: column;
+      // background: lightgrey;
+      border: 1px solid grey;
+      flex-basis: calc(50% - 16px);
+      padding: 10px 0;
+      margin: 10px 8px;
+    }
+
+    p {
+      font-family: monospace;
+    }
+  }
+
+  &__emoji {
+    font-size: 2rem;
+    position: relative;
+
+    &--crossed {
+      &:before {
+        content: 'X';
+        position: absolute;
+        color: #1DB954;
+        font-size: 3rem;
+        bottom: -6px;
+      }
+    }
+  }
+
   &__buttons {
     min-height: 60px;
   }
@@ -180,13 +311,16 @@ button {
 
   &__playlist {
     font-weight: 700;
+    padding: 0 16px;
 
     a {
-      padding: 16px 12px;
+      font-size: 1rem;
+      font-family: monospace;
+      padding: 16px;
       width: 100%;
       height: 100%;
       display: block;
-      letter-spacing: 1px;
+      letter-spacing: 0.8px;
       transition: all .1s cubic-bezier(1.0, 0.5, 0.8, 1.0);
 
       &:hover {
@@ -202,11 +336,19 @@ button {
   &__disclaimer {
     margin: 16px;
     text-align: left;
+
+    h4 {
+      margin-bottom: 20px;
+    }
+
+    * {
+      font-family: monospace;
+    }
   }
 
   &__list-item {
     padding-left: 20px;
-    margin-bottom: 3px;
+    margin-bottom: 24px;
 
     &:before {
       content: '🎵';

@@ -10,10 +10,10 @@
       template(v-if="trackData")
         p(v-for="field in displayedFields")
           strong {{ field + ': ' }}
-          span(v-if="field === 'key'") {{ translatedKey }}
-          span(v-else-if="field === 'valence'") {{ translatedValence }}
-          span(v-else-if="field === 'tempo'") {{ Math.round(trackData[field]) + ' bpm'}}
-          span(v-else) {{ trackData[field] }}
+          span(v-if="field === 'Key'") {{ translatedKey }}
+          span(v-else-if="field === 'Valence'") {{ translatedValence }}
+          span(v-else-if="field === 'Tempo'") {{ Math.round(trackData[field.toLowerCase()]) + ' bpm'}}
+          span(v-else) {{ trackData[field.toLowerCase()] }}
 </template>
 <script>
 import { mapState } from 'Vuex'
@@ -47,7 +47,7 @@ export default {
       return this.playlistTrackData[this.song.track.id] || undefined
     },
     displayedFields () {
-      return ['key', 'tempo', 'energy', 'danceability', 'valence']
+      return ['Key', 'Tempo', 'Energy', 'Danceability', 'Valence']
     },
     translatedKey () {
       const keychangeKey = {
@@ -84,6 +84,10 @@ export default {
   border-top: 1px solid grey;
   padding: 16px;
   display: flex;
+
+  h2 {
+    margin-top: 0;
+  }
 
   h3 {
     letter-spacing: 2px;
