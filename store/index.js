@@ -3,6 +3,7 @@ export const state = () => ({
   isLoading: false,
   playlists: [],
   activePlaylist: null,
+  activePlaylistName: null,
   playlistTrackData: {},
   accessToken: null,
   isLoggedIn: false
@@ -59,7 +60,7 @@ export const actions = {
         access_token: this.state.accessToken
       }
     })
-    commit('SET_ACTIVE_PLAYLIST', playlist)
+    commit('SET_ACTIVE_PLAYLIST', { ...{ name: playlistName, ...playlist } })
     dispatch('getTrackData', playlist.items)
   },
   async getMoreTracks ({ commit, dispatch }, apiCall) {

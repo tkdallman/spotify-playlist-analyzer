@@ -15,19 +15,20 @@
               a(role="button" @click="getPlaylistAndScroll([playlist.id, playlist.name])") {{ playlist.name }}
 
       transition(name="slide-fade")
-        .page__card-container(v-if="playlistActive && hasTrackData")
+        div.page__cards(v-if="playlistActive && hasTracks")
           .page__card
-            h2 About this playlist:
-            h5 (based on the first 50 tracks...)
+            .page__card-heading
+              h2 {{ activePlaylist.name }}
+              h5 (based on the first 50 tracks...)
             ul.page__analysis
               li
                 strong Average Happiness:
-                p {{ happiness }}
+                p {{ avgHappiness }}
                 .page__emoji {{ happinessEmoji }}
               li
                 strong Average Danciness:
-                p {{ danciness }}
-                .page__emoji(:class="{ 'page__emoji--crossed': danciness < 0.5 }")
+                p {{ avgDanciness }}
+                .page__emoji(:class="{ 'page__emoji--crossed': avgDanciness < 0.5 }")
                   | 💃
               li
                 strong Average Tempo:
@@ -39,18 +40,18 @@
                 strong Song Popularity:
                 p {{ popularity }}
 
-            .page__card
-              .page__selected-playlist
-                .page__sort
-                  h4 Sort:
-                  select#SortBy(@change="changeSort")
-                    option Select a method...
-                    option Key
-                    option Tempo
-                    option Energy
-                    option Danceability
-                ul.page__tracks(v-for="(song, index) in activePlaylist.items")
-                  Song(:song="song" :darkTheme="index % 2 !== 0")
+          .page__card
+            .page__selected-playlist
+              .page__sort
+                h4 Sort:
+                select#SortBy(@change="changeSort")
+                  option Select a method...
+                  option Key
+                  option Tempo
+                  option Energy
+                  option Danceability
+              ul.page__tracks(v-for="(song, index) in activePlaylist.items")
+                Song(:song="song" :darkTheme="index % 2 !== 0")
       button(v-show="playlistActive" @click="clearPlaylistAndScroll") Back
       button(v-if="showMoreButton" @click="getMoreTracks(activePlaylist.next)") More
 
@@ -76,11 +77,6 @@ export default {
     ContentBlock,
     Song
   },
-  data () {
-    return {
-      avgHappiness: null
-    }
-  },
   computed: {
     ...mapState({
       isLoading: state => state.isLoading,
@@ -98,10 +94,11 @@ export default {
     totalTracks () {
       return Object.keys(this.playlistTrackData).length
     },
-    hasTrackData () {
-      return this.playlistTrackData !== {}
+    hasTracks () {
+      return this.totalTracks > 0
     },
-    happiness () {
+    avgHappiness () {
+      if (!this.hasTracks) { return false }
       const happiness = Object.keys(this.playlistTrackData).reduce((sum, item) => {
         return (sum += this.playlistTrackData[item].valence)
       }, 0) / this.totalTracks
@@ -112,28 +109,32 @@ export default {
         ? '😔' : this.happiness < 0.666 ? '😐' : '😊'
       return emoji
     },
-    danciness () {
+    avgDanciness () {
+      if (!this.hasTracks) { return false }
       const danciness = Object.keys(this.playlistTrackData).reduce((sum, item) => {
         return (sum += this.playlistTrackData[item].danceability)
       }, 0) / this.totalTracks
       return danciness.toFixed(3) || null
     },
     avgTempo () {
+      if (!this.hasTracks) { return false }
       const tempo = Object.keys(this.playlistTrackData).reduce((sum, item) => {
         return (sum += this.playlistTrackData[item].tempo)
       }, 0) / this.totalTracks
       return Math.round(tempo) || null
     },
     avgLength () {
+      if (!this.hasTracks) { return false }
       const length = Object.keys(this.playlistTrackData).reduce((sum, item) => {
         return (sum += this.playlistTrackData[item].duration_ms)
-      }, 0) / this.totalTracks || null
+      }, 0) / this.totalTracks
 
       const minutes = Math.floor(length / 60000)
       const seconds = ((length % 60000) / 1000).toFixed(0)
       return minutes + ':' + (seconds < 10 ? '0' : '') + seconds
     },
     popularity () {
+      if (this.totalTrack === 0) { return false }
       const popularity = this.activePlaylist.items.reduce((sum, item) => {
         return (sum += item.track.popularity)
       }, 0) / this.totalTracks
@@ -261,14 +262,32 @@ button {
   &__sort {
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin: 16px 0;
+    justify-content: flex-end;
+    margin: 16px 16px;
   }
 
   &__card {
     background-color: #e5e3e6;
     margin: 32px 16px 32px;
     border: 2px solid grey;
+    padding-bottom: 8px;
+  }
+
+  &__card-heading {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    margin: 16px 16px 0;
+
+    h2 {
+      margin-top: 16px;
+      font-size: 36px;
+      letter-spacing: 2.4px;
+    }
+
+    h5 {
+      margin-bottom: 16px;
+    }
   }
 
   &__analysis {
@@ -286,8 +305,8 @@ button {
       flex-direction: column;
       // background: lightgrey;
       border: 1px solid grey;
-      flex-basis: calc(50% - 16px);
-      padding: 10px 0;
+      flex-basis: calc(50% - 24px);
+      padding: 12px;
       margin: 10px 8px;
     }
 
