@@ -47,28 +47,36 @@ export const actions = {
     commit('SET_ACCESS_TOKEN', accessToken)
   },
   async getPlaylists ({ commit }) {
-    const playlists = await this.$axios.$get('https://api.spotify.com/v1/me/playlists', {
-      params: {
-        access_token: this.state.accessToken
-      }
-    })
-    commit('SET_PLAYLISTS', playlists.items)
+    try {
+      const playlists = await this.$axios.$get('https://api.spotify.com/v1/me/playlists', {
+        params: {
+          access_token: this.state.accessToken
+        }
+      })
+      commit('SET_PLAYLISTS', playlists.items)
+    } catch (err) {
+      console.log(err)
+    }
   },
   async getPlaylist ({ commit, dispatch }, [playlistId, playlistName]) {
-    const playlist = await this.$axios.$get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50`, {
-      params: {
-        access_token: this.state.accessToken
-      }
-    })
-    commit('SET_ACTIVE_PLAYLIST', { ...{ name: playlistName, ...playlist } })
-    dispatch('getTrackData', playlist.items)
+    try {
+      const playlist = await this.$axios.$get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50`, {
+        params: {
+          access_token: this.state.accessToken
+        }
+      })
+      commit('SET_ACTIVE_PLAYLIST', { ...{ name: playlistName, ...playlist } })
+      dispatch('getTrackData', playlist.items)
+    } catch (err) {
+      console.log('THIS MADE A MKSTAKE')
+    }
   },
   async getMoreTracks ({ commit, dispatch }, apiCall) {
     const moreTracks = await this.$axios.$get(apiCall, {
       params: {
         access_token: this.state.accessToken
       }
-    }).catch(err => console.log(err))
+    })
     commit('ADD_MORE_TRACKS', moreTracks)
     dispatch('getTrackData', moreTracks.items)
   },
