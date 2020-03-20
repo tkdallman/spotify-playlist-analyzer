@@ -12,44 +12,46 @@
         .page__card(v-if="!playlistActive")
           ul.page__playlists
             li.page__playlist(v-for="playlist in playlists")
-              a(role="button" @click="getPlaylist([playlist.id, playlist.name])") {{ playlist.name }}
+              a(role="button" @click="getPlaylistAndScroll([playlist.id, playlist.name])") {{ playlist.name }}
 
-      .page__card(v-if="playlistActive && hasTrackData")
-        h2 About this playlist:
-        h5 (based on the first 50 tracks...)
-        ul.page__analysis
-          li
-            strong Average Happiness:
-            p {{ happiness }}
-            .page__emoji {{ happinessEmoji }}
-          li
-            strong Average Danciness:
-            p {{ danciness }}
-            .page__emoji(:class="{ 'page__emoji--crossed': danciness < 0.5 }")
-              | 💃
-          li
-            strong Average Tempo:
-            p {{ avgTempo }} bpm
-          li
-            strong Average Track Length:
-            p {{ avgLength }}
-          li
-            strong Song Popularity:
-            p {{ popularity }}
       transition(name="slide-fade")
-        .page__card(v-if="playlistActive")
-          .page__selected-playlist
-            .page__sort
-              h4 Sort:
-              select#SortBy(@change="changeSort")
-                option Select a method...
-                option Key
-                option Tempo
-                option Energy
-                option Danceability
-            ul.page__tracks(v-for="(song, index) in activePlaylist.items")
-              Song(:song="song" :darkTheme="index % 2 !== 0")
-      button(v-show="playlistActive" @click="clearActivePlaylist") Back
+        .page__card-container(v-if="playlistActive && hasTrackData")
+          .page__card
+            h2 About this playlist:
+            h5 (based on the first 50 tracks...)
+            ul.page__analysis
+              li
+                strong Average Happiness:
+                p {{ happiness }}
+                .page__emoji {{ happinessEmoji }}
+              li
+                strong Average Danciness:
+                p {{ danciness }}
+                .page__emoji(:class="{ 'page__emoji--crossed': danciness < 0.5 }")
+                  | 💃
+              li
+                strong Average Tempo:
+                p {{ avgTempo }} bpm
+              li
+                strong Average Track Length:
+                p {{ avgLength }}
+              li
+                strong Song Popularity:
+                p {{ popularity }}
+
+            .page__card
+              .page__selected-playlist
+                .page__sort
+                  h4 Sort:
+                  select#SortBy(@change="changeSort")
+                    option Select a method...
+                    option Key
+                    option Tempo
+                    option Energy
+                    option Danceability
+                ul.page__tracks(v-for="(song, index) in activePlaylist.items")
+                  Song(:song="song" :darkTheme="index % 2 !== 0")
+      button(v-show="playlistActive" @click="clearPlaylistAndScroll") Back
       button(v-if="showMoreButton" @click="getMoreTracks(activePlaylist.next)") More
 
       .page__card
@@ -97,7 +99,7 @@ export default {
       return Object.keys(this.playlistTrackData).length
     },
     hasTrackData () {
-      return this.playlistTrackData
+      return this.playlistTrackData !== {}
     },
     happiness () {
       const happiness = Object.keys(this.playlistTrackData).reduce((sum, item) => {
@@ -114,18 +116,18 @@ export default {
       const danciness = Object.keys(this.playlistTrackData).reduce((sum, item) => {
         return (sum += this.playlistTrackData[item].danceability)
       }, 0) / this.totalTracks
-      return danciness.toFixed(3)
+      return danciness.toFixed(3) || null
     },
     avgTempo () {
       const tempo = Object.keys(this.playlistTrackData).reduce((sum, item) => {
         return (sum += this.playlistTrackData[item].tempo)
       }, 0) / this.totalTracks
-      return Math.round(tempo)
+      return Math.round(tempo) || null
     },
     avgLength () {
       const length = Object.keys(this.playlistTrackData).reduce((sum, item) => {
         return (sum += this.playlistTrackData[item].duration_ms)
-      }, 0) / this.totalTracks
+      }, 0) / this.totalTracks || null
 
       const minutes = Math.floor(length / 60000)
       const seconds = ((length % 60000) / 1000).toFixed(0)
@@ -163,6 +165,14 @@ export default {
     },
     changeSort (e) {
       this.sortPlaylist(e.target.value)
+    },
+    getPlaylistAndScroll (args) {
+      window.scrollTo(0, 0)
+      this.getPlaylist(args)
+    },
+    clearPlaylistAndScroll () {
+      window.scrollTo(0, 0)
+      this.clearActivePlaylist()
     }
   }
 }
