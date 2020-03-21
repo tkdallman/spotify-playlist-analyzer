@@ -20,7 +20,7 @@
           .page__card(v-if="showErrorMessage")
             .page__error
               | Something has happened! Usually this relates to how many requests can be made to Spotify at a time and can be fixed by simply going back and retrying.
-              | And sorry for the inconvenience.
+              | Sorry for the inconvenience.
           .page__card
             .page__card-heading
               h2 {{ activePlaylist.name ? activePlaylist.name : '' }}
