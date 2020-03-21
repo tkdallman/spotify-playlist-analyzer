@@ -9,16 +9,21 @@
           button(v-show="playlistActive" @click="clearActivePlaylist") Back
 
       transition(name="slide-fade")
-        .page__card(v-if="!playlistActive")
+        .page__card(v-if="!playlistActive && playlists.length > 0")
           ul.page__playlists
             li.page__playlist(v-for="playlist in playlists")
               a(role="button" @click="getPlaylistAndScroll([playlist.id, playlist.name])") {{ playlist.name }}
 
       transition(name="slide-fade")
-        div.page__cards(v-if="playlistActive && hasTracks")
+        .page__cards(v-if="playlistActive && hasTracks || showErrorMessage")
+
+          .page__card(v-if="showErrorMessage")
+            .page__error
+              | Something has happened! Usually this relates to how many requests can be made to Spotify at a time and can be fixed by simply going back and retrying.
+              | And sorry for the inconvenience.
           .page__card
             .page__card-heading
-              h2 {{ activePlaylist.name }}
+              h2 {{ activePlaylist.name ? activePlaylist.name : '' }}
               h5 (based on the first 50 tracks...)
             ul.page__analysis
               li
@@ -83,7 +88,8 @@ export default {
       isLoggedIn: state => state.isLoggedIn,
       playlists: state => state.playlists,
       activePlaylist: state => state.activePlaylist,
-      playlistTrackData: state => state.playlistTrackData
+      playlistTrackData: state => state.playlistTrackData,
+      showErrorMessage: state => state.showErrorMessage
     }),
     playlistActive () {
       return this.activePlaylist && this.activePlaylist.items
@@ -98,11 +104,11 @@ export default {
       return this.totalTracks > 0
     },
     avgHappiness () {
-      if (!this.hasTracks) { return false }
+      if (!this.hasTracks) { return null }
       const happiness = Object.keys(this.playlistTrackData).reduce((sum, item) => {
         return (sum += this.playlistTrackData[item].valence)
       }, 0) / this.totalTracks
-      return happiness.toFixed(3) || null
+      return happiness.toFixed(3)
     },
     happinessEmoji () {
       const emoji = this.happiness < 0.333
@@ -110,21 +116,21 @@ export default {
       return emoji
     },
     avgDanciness () {
-      if (!this.hasTracks) { return false }
+      if (!this.hasTracks) { return null }
       const danciness = Object.keys(this.playlistTrackData).reduce((sum, item) => {
         return (sum += this.playlistTrackData[item].danceability)
       }, 0) / this.totalTracks
-      return danciness.toFixed(3) || null
+      return danciness.toFixed(3)
     },
     avgTempo () {
-      if (!this.hasTracks) { return false }
+      if (!this.hasTracks) { return null }
       const tempo = Object.keys(this.playlistTrackData).reduce((sum, item) => {
         return (sum += this.playlistTrackData[item].tempo)
       }, 0) / this.totalTracks
-      return Math.round(tempo) || null
+      return Math.round(tempo)
     },
     avgLength () {
-      if (!this.hasTracks) { return false }
+      if (!this.hasTracks) { return null }
       const length = Object.keys(this.playlistTrackData).reduce((sum, item) => {
         return (sum += this.playlistTrackData[item].duration_ms)
       }, 0) / this.totalTracks
@@ -134,7 +140,7 @@ export default {
       return minutes + ':' + (seconds < 10 ? '0' : '') + seconds
     },
     popularity () {
-      if (this.totalTrack === 0) { return false }
+      if (!this.hasTracks) { return null }
       const popularity = this.activePlaylist.items.reduce((sum, item) => {
         return (sum += item.track.popularity)
       }, 0) / this.totalTracks
@@ -280,7 +286,7 @@ button {
     margin: 16px 16px 0;
 
     h2 {
-      margin-top: 16px;
+      margin-top: 8px;
       font-size: 36px;
       letter-spacing: 2.4px;
     }
@@ -288,6 +294,16 @@ button {
     h5 {
       margin-bottom: 16px;
     }
+  }
+
+  &__error {
+    padding: 16px;
+    font-weight: 700;
+    font-family: courier;
+    border: 1px dashed red;
+    margin: 16px;
+    background: #e9bac2;
+    color: #953333;
   }
 
   &__analysis {

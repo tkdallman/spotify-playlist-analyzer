@@ -6,7 +6,8 @@ export const state = () => ({
   activePlaylistName: null,
   playlistTrackData: {},
   accessToken: null,
-  isLoggedIn: false
+  isLoggedIn: false,
+  showErrorMessage: false
 })
 
 export const mutations = {
@@ -38,6 +39,9 @@ export const mutations = {
     const currentTracks = state.activePlaylist.items
     state.activePlaylist.next = moreTracks.next
     state.activePlaylist.items = [...currentTracks, ...moreTracks.items]
+  },
+  SHOW_ERROR_MESSAGE (state, showState) {
+    state.showErrorMessage = showState
   }
 }
 
@@ -68,33 +72,41 @@ export const actions = {
       commit('SET_ACTIVE_PLAYLIST', { ...{ name: playlistName, ...playlist } })
       dispatch('getTrackData', playlist.items)
     } catch (err) {
-      console.log('THIS MADE A MKSTAKE')
+      console.log('set_active_playlist messed up')
     }
   },
   async getMoreTracks ({ commit, dispatch }, apiCall) {
-    const moreTracks = await this.$axios.$get(apiCall, {
-      params: {
-        access_token: this.state.accessToken
-      }
-    })
-    commit('ADD_MORE_TRACKS', moreTracks)
-    dispatch('getTrackData', moreTracks.items)
-  },
-  async getTrackData ({ commit }, items) {
-    commit('SET_IS_LOADING', true)
-    const trackDataRequests = items.map((item) => {
-      return this.$axios.$get(`https://api.spotify.com/v1/audio-features/${item.track.id}`, {
+    try {
+      const moreTracks = await this.$axios.$get(apiCall, {
         params: {
           access_token: this.state.accessToken
         }
       })
-    })
-    const trackData = await Promise.all([...trackDataRequests])
-    const formattedData = trackData.reduce((obj, track) => {
-      obj[track.id] = track
-      return obj
-    }, {})
-    commit('ADD_TRACK_DATA', formattedData)
+      commit('ADD_MORE_TRACKS', moreTracks)
+      dispatch('getTrackData', moreTracks.items)
+    } catch (err) {
+      commit('SHOW_ERROR_MESSAGE', true)
+    }
+  },
+  async getTrackData ({ commit }, items) {
+    commit('SET_IS_LOADING', true)
+    try {
+      const trackDataRequests = items.map((item) => {
+        return this.$axios.$get(`https://api.spotify.com/v1/audio-features/${item.track.id}`, {
+          params: {
+            access_token: this.state.accessToken
+          }
+        })
+      })
+      const trackData = await Promise.all([...trackDataRequests])
+      const formattedData = trackData.reduce((obj, track) => {
+        obj[track.id] = track
+        return obj
+      }, {})
+      commit('ADD_TRACK_DATA', formattedData)
+    } catch (err) {
+      commit('SHOW_ERROR_MESSAGE', true)
+    }
     commit('SET_IS_LOADING', false)
   },
   sortPlaylist ({ commit }, sortType) {
@@ -102,5 +114,6 @@ export const actions = {
   },
   clearActivePlaylist ({ commit }) {
     commit('SET_ACTIVE_PLAYLIST', null)
+    commit('SHOW_ERROR_MESSAGE', false)
   }
 }
