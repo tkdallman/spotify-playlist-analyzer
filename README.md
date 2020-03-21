@@ -1,4 +1,4 @@
-![img](https://imgur.com/a/Uh0d6Cx.jpg)
+<img src="https://imgur.com/a/Uh0d6Cx.jpg">
 
 ## What is this?
 
