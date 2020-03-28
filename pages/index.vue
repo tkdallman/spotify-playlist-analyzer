@@ -155,6 +155,14 @@ export default {
       this.getPlaylists()
     }
   },
+  head () {
+    return {
+      title: 'Spotify Playlist Analyzer',
+      meta: [
+        { hid: 'description', name: 'description', content: 'A Spotify Playlist Analyzer built by TK Dallman' }
+      ]
+    }
+  },
   methods: {
     ...mapActions([
       'setAccessToken',
