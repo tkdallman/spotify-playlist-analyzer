@@ -16,12 +16,13 @@
     display: inline;
     width: fit-content;
     position: relative;
+    color: $theme-light;
     letter-spacing: 2.4px;
     font-size: 2rem;
     z-index: 1;
     transform: rotate(1deg);
     margin: 0 auto;
-    padding: 4px 8px;    
+    padding: 8px 12px;    
 
     &:after {
       content: '';
@@ -30,7 +31,7 @@
       right: 0;
       top: 0;
       bottom: 0;
-      background: lightgrey;
+      background: $theme-mid;
       z-index: -1;
     }
   }

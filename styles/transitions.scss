@@ -1,4 +1,14 @@
 
+
+.slide-top-enter-active {
+  transform: translateY(10px);
+}
+
+.slide-top-enter {
+  transition: all .4s cubic-bezier(1.0, 0.5, 0.8, 1.0);;
+  transform: translateY(0);
+}
+
 .slide-fade-enter-active, .slide-fade-leave-active {
   transition: all .4s cubic-bezier(1.0, 0.5, 0.8, 1.0);;
 }
