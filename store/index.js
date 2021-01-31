@@ -72,7 +72,7 @@ export const actions = {
       commit('SET_ACTIVE_PLAYLIST', { ...{ name: playlistName, ...playlist } })
       dispatch('getTrackData', playlist.items)
     } catch (err) {
-      alert(err)
+      throw new Error(err)
     }
   },
   async getMoreTracks ({ commit, dispatch }, apiCall) {

@@ -1,12 +1,17 @@
 button {
-  cursor: pointer;
-  padding: 16px 20px;
-  border: none;
+  color: $theme-light;
   background-color: $theme-highlight;
-  border-radius: 20px;
   font-size: 1.2rem;
   font-weight: 500;
-  color: $theme-light;
+  border: none;
+  padding: 16px 20px;
+  border-radius: 20px;
+  transition: all 1s;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $theme-highlight-dark;
+  } 
 
   &:active, &:focus {
     outline: none;

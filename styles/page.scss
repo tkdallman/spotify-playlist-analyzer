@@ -28,7 +28,7 @@
       &:before {
         content: 'X';
         position: absolute;
-        color: #1DB954;
+        color: $theme-highlight;
         font-size: 3rem;
         bottom: -6px;
       }

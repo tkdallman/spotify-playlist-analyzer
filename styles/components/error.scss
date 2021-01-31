@@ -1,9 +1,9 @@
 .error {
-  padding: 16px;
   font-weight: 700;
   font-family: courier;
+  color: $theme-error;
+  background: $theme-error-light;
   border: 1px dashed $theme-error-highlight;
   margin: 16px;
-  background: $theme-error-light;
-  color: $theme-error;
+  padding: 16px;
 }

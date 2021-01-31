@@ -73,24 +73,16 @@ export default {
       showErrorMessage: state => state.showErrorMessage
     }),
     playlistActive () {
-      return this.activePlaylist && this.activePlaylist.items
+      return this.activePlaylist?.items || false
     },
     showMoreButton () {
-      return this.activePlaylist && this.activePlaylist.next
+      return this.activePlaylist?.next || false
     },
     totalTracks () {
       return Object.keys(this.playlistTrackData).length
     },
     hasTracks () {
       return this.totalTracks > 0
-    }
-  },
-  head () {
-    return {
-      title: 'Spotify Playlist Analyzer',
-      meta: [
-        { hid: 'description', name: 'description', content: 'A Spotify Playlist Analyzer built by TK Dallman' }
-      ]
     }
   },
   methods: {
@@ -114,6 +106,14 @@ export default {
     clearPlaylistAndScroll () {
       window.scrollTo(0, 0)
       this.clearActivePlaylist()
+    }
+  },
+  head () {
+    return {
+      title: 'Spotify Playlist Analyzer',
+      meta: [
+        { hid: 'description', name: 'description', content: 'A Spotify Playlist Analyzer built by TK Dallman' }
+      ]
     }
   }
 }

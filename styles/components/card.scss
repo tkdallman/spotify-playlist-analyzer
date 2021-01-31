@@ -1,7 +1,7 @@
 .card {
   background: $theme-light;
   background-color: $theme-light;
-  margin: 32px 16px 32px;
+  margin: 32px 8px 32px;
   border: 2px solid $theme-mid;
   padding-bottom: 8px;
 
@@ -10,18 +10,35 @@
     flex-wrap: wrap;
     flex-direction: column;
     margin: 16px 16px 0;
+  }
 
-    &__heading {
-      margin-top: 8px;
-      font-size: 36px;
-      letter-spacing: 2.4px;
-    }
+  &__heading {
+    display: inline;
+    width: fit-content;
+    position: relative;
+    letter-spacing: 2.4px;
+    font-size: 2rem;
+    z-index: 1;
+    transform: rotate(1deg);
+    margin: 0 auto;
+    padding: 4px 8px;    
 
-    &__subheading {
-      margin-bottom: 16px;
+    &:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background: lightgrey;
+      z-index: -1;
     }
   }
 
+  &__subheading {
+    margin-bottom: 16px;
+  }
+  
   &__content-box {
     display: flex;
     flex-wrap: wrap;
@@ -35,7 +52,7 @@
     li {
       display: flex;
       flex-direction: column;
-      border: 1px solid grey;
+      border: 1px solid $theme-mid;
       flex-basis: calc(50% - 24px);
       padding: 12px;
       margin: 10px 8px;
@@ -50,20 +67,20 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    margin: 16px 16px;
+    margin: 16px;
   }
 
 
   &__footer {
-    margin: 16px;
     text-align: left;
-
-    h4 {
-      margin-bottom: 20px;
-    }
+    margin: 16px;
 
     * {
       font-family: monospace;
+    }
+
+    h4 {
+      margin-bottom: 20px;
     }
   }
 
