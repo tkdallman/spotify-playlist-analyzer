@@ -1,0 +1,9 @@
+.error {
+  padding: 16px;
+  font-weight: 700;
+  font-family: courier;
+  border: 1px dashed $theme-error-highlight;
+  margin: 16px;
+  background: $theme-error-light;
+  color: $theme-error;
+}

@@ -1,0 +1,80 @@
+.card {
+  background: $theme-light;
+  background-color: $theme-light;
+  margin: 32px 16px 32px;
+  border: 2px solid $theme-mid;
+  padding-bottom: 8px;
+
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    margin: 16px 16px 0;
+
+    &__heading {
+      margin-top: 8px;
+      font-size: 36px;
+      letter-spacing: 2.4px;
+    }
+
+    &__subheading {
+      margin-bottom: 16px;
+    }
+  }
+
+  &__content-box {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    li, strong {
+      font-family: monospace;
+      font-size: 1.2rem;
+    }
+
+    li {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid grey;
+      flex-basis: calc(50% - 24px);
+      padding: 12px;
+      margin: 10px 8px;
+    }
+
+    p {
+      font-family: monospace;
+    }
+  }
+
+  &__sort {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 16px 16px;
+  }
+
+
+  &__footer {
+    margin: 16px;
+    text-align: left;
+
+    h4 {
+      margin-bottom: 20px;
+    }
+
+    * {
+      font-family: monospace;
+    }
+  }
+
+  &__list-item {
+    padding-left: 28px;
+    margin-bottom: 24px;
+
+    &:before {
+      content: '🎵';
+      position: absolute;
+      left: 0;
+    }
+  }
+}

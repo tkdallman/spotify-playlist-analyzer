@@ -59,7 +59,7 @@ export const actions = {
       })
       commit('SET_PLAYLISTS', playlists.items)
     } catch (err) {
-      console.log(err)
+      alert(err)
     }
   },
   async getPlaylist ({ commit, dispatch }, [playlistId, playlistName]) {
@@ -72,7 +72,7 @@ export const actions = {
       commit('SET_ACTIVE_PLAYLIST', { ...{ name: playlistName, ...playlist } })
       dispatch('getTrackData', playlist.items)
     } catch (err) {
-      console.log('set_active_playlist messed up')
+      alert(err)
     }
   },
   async getMoreTracks ({ commit, dispatch }, apiCall) {

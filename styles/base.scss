@@ -1,0 +1,56 @@
+* {
+  font-family: "Helvetica Neue", "Helvetica", sans-serif
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  font-size: 16px;
+  word-spacing: 1px;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;  
+  background-color: $theme-dark;
+  color: $theme-dark;
+}
+
+ul {
+  position: relative;
+  list-style-type: none;
+  padding-left: 0;
+}
+
+li {
+  font-size: 0.8rem;
+}
+
+a {
+  cursor: pointer;
+}
+
+h2 {
+  margin: 16px 0 4px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+h4 {
+  margin: 0 16px;
+}
+
+h5 {
+  margin-bottom: 8px;
+}
+
+select {
+  font-size: 16px;
+}
+
+
