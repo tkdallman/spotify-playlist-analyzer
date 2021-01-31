@@ -94,10 +94,7 @@ export default {
       'clearActivePlaylist'
     ]),
     authorizeUser () {
-      // dev mode
-      window.location.href = 'https://accounts.spotify.com/authorize?client_id=c1d9eac11b924974befb50e216500a9a&redirect_uri=http:%2F%2Flocalhost:3000&scope=user-read-private%20user-read-email%20playlist-read-private%20playlist-read-collaborative&response_type=token'
-      // production
-      // window.location.href = 'https://accounts.spotify.com/authorize?client_id=c1d9eac11b924974befb50e216500a9a&redirect_uri=https:%2F%2Ftkdallman.github.io%2Fspotify-playlist-analyzer%2F&scope=user-read-private%20user-read-email%20playlist-read-private%20playlist-read-collaborative&response_type=token'
+      window.location.href = 'https://accounts.spotify.com/authorize?client_id=c1d9eac11b924974befb50e216500a9a&redirect_uri=https:%2F%2Ftkdallman.github.io%2Fspotify-playlist-analyzer%2F&scope=user-read-private%20user-read-email%20playlist-read-private%20playlist-read-collaborative&response_type=token'
     },
     getPlaylistAndScroll (args) {
       window.scrollTo(0, 0)
